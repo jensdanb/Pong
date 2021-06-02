@@ -14,6 +14,7 @@ class PongGame(Widget):
     def place_players(self):
         self.player_1.center = self.center
         self.player_2.center = self.center
+        self.player_2.orientation_x = -1
 
     def serve_ball(self):
         self.ball.center = self.center
@@ -25,37 +26,27 @@ class PongGame(Widget):
         if touch.x > self.width - self.width / 3:  # Right side, player 2
             self.player_2.center_y = touch.y
 
-    def check_collisions(self):
-        new_direction = [0, 0]  # Enforces general direction after collision. [x, y]
-        # Example directions: [1, 1] is positive x and y -> right and up.
-        # [1, 1] is positive x and y -> right and up.
-        # [0, -1] is zero x and negative y -> continue previous left/right, but move down.
-        wall_collisions = {  # Booleans
+    def collision_handler(self):
+
+        wall_collision_conditions = {  # Booleans
             'top': (self.ball.top > self.height) and (self.ball.velocity_y > 0),
             'bottom': (self.ball.y < 0) and (self.ball.velocity_y < 0),
             'right': (self.ball.right > self.width) and (self.ball.velocity_x > 0),
             'left': (self.ball.x < 0) and (self.ball.velocity_x < 0)
         }
 
-        if True in wall_collisions.values():
-            if wall_collisions['left']:
-                new_direction[0] = 1  # Bounce to the right
-            if wall_collisions['right']:
-                new_direction[0] = -1  # Bounce to the left
-            if wall_collisions['bottom']:
-                new_direction[1] = 1  # Bounce up
-            if wall_collisions['top']:
-                new_direction[1] = -1  # Bounce down
+        # Check and (if True) perform wall collisions
+        if True in wall_collision_conditions.values():
+            self.ball.collide_wall(wall_collision_conditions)
 
-            self.ball.bounce_in_direction(new_direction)
-
-        else:
-            self.ball.bounce_on_paddle(self.player_1, [1, 0])
-            self.ball.bounce_on_paddle(self.player_2, [-1, 0])
+        # Check and (if True) perform paddle collisions
+        else:  # Prevents double collision bugs
+            self.ball.collide_paddle(self.player_1)
+            self.ball.collide_paddle(self.player_2)
 
     def update(self, dt):
         self.ball.move()
-        self.check_collisions()
+        self.collision_handler()
 
 
 class PongBall(Widget):
@@ -69,28 +60,58 @@ class PongBall(Widget):
     def teleport(self, new_pos, shift):
         pass
 
-    def bounce_in_direction(self, bounce_direction):
+    def bounce_from_surface(self, surface_direction):
         # Bounces if moving opposite of intended bounce direction.
-        if self.velocity_x * bounce_direction[0] < 0:
+        if self.velocity_x * surface_direction[0] < 0:
             self.velocity_x *= -1
-        if self.velocity_y * bounce_direction[1] < 0:
+        if self.velocity_y * surface_direction[1] < 0:
             self.velocity_y *= -1
 
-    def bounce_on_paddle(self, paddle, bounce_direction):
+    def collide_wall(self, wall_collisions):
+        wall_orientation = [0, 0]  # Enforces general direction after collision. [x, y]
+        # Example directions: [1, 1] is positive x and y -> right and up.
+        # [1, 1] is positive x and y -> right and up.
+        # [0, -1] is zero x and negative y -> continue previous left/right, but move down.
+        if wall_collisions['left']:
+            wall_orientation[0] = 1  # Bounce to the right
+        if wall_collisions['right']:
+            wall_orientation[0] = -1  # Bounce to the left
+        if wall_collisions['bottom']:
+            wall_orientation[1] = 1  # Bounce up
+        if wall_collisions['top']:
+            wall_orientation[1] = -1  # Bounce down
+        self.bounce_from_surface(wall_orientation)
+
+    def collide_paddle(self, paddle):
         if self.collide_widget(paddle):
-            added_speed = 0.4   # Pixels per update. 10% of starting speed
-            added_vector = Vector(self.velocity).normalize() * added_speed
+
+            # Give points to player for hitting the ball
+            if self.velocity_x * paddle.orientation_x < 0:  # Prevents double counting a hit
+                paddle.score += 1
+            elif self.velocity_y * paddle.orientation_y < 0:  # For (hypothetical) top/bottom paddle
+                paddle.score += 1
+
+            # Speed up for each strike
+            added_speed = 0.4  # 10% of starting speed (4.0 pixels per update)
+            added_vector = Vector(self.velocity).normalize() * added_speed  # Aligns added speed to direction of travel
             self.velocity_x += added_vector.x
             self.velocity_y += added_vector.y
 
-            self.bounce_in_direction(bounce_direction)
-            # self.velocity_x *= -1
+            # Bounce
+            self.bounce_from_surface(paddle.orientation)
 
-            paddle.score += 1
+            # Deflect depending on where on the paddle it lands
+            # pseudocode: deflection (counter-clockwise) proportional to f(h, o) = h/o, where:
+            # h = height of impact from center of paddle
+            # o = outgoing angle before deflection (also counter-clockwise)
 
 
 class PongPaddle(Widget):
-    bounce_direction = NumericProperty(1)
+    # Orientation of the paddle. [1, 1] means right and up diagonally, [-1, 0] means left only.
+    # Right side paddle is oriented to the left. [1, 0] (rightwards) orientation is default.
+    orientation_x = NumericProperty(1)
+    orientation_y = NumericProperty(0)
+    orientation = ReferenceListProperty(orientation_x, orientation_y)
 
     score = NumericProperty(0)
 
