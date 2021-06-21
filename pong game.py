@@ -61,13 +61,15 @@ class PongBall(Widget):
         pass
 
     def moving_into_surface(self, surface_direction):
-        if (self.velocity_x * surface_direction[0] < 0) or (self.velocity_y * surface_direction[1] < 0):
+        if self.velocity_x * surface_direction[0] < 0:
+            return True
+        elif self.velocity_y * surface_direction[1] < 0:
             return True
         else:
             return False
 
     def bounce_from_surface(self, surface_direction):
-        # prepare
+        # prepare vectors
         surface_vector = Vector(surface_direction).normalize()  # Ensures always unity vector
         ball_vector = Vector(self.velocity)
 
@@ -81,20 +83,6 @@ class PongBall(Widget):
         # return
         self.velocity_x = outgoing_direction.x
         self.velocity_y = outgoing_direction.y
-
-        # if faulty bounce, re-bounce
-        """
-        if self.moving_into_surface(surface_direction):
-            self.bounce_from_surface(surface_direction)
-        """
-
-        """  # Old version. Could only bounce on perfectly orthogonal ("square") surfaces
-        # Bounces if moving opposite of intended bounce direction.
-        if self.velocity_x * surface_direction[0] < 0:
-            self.velocity_x *= -1
-        if self.velocity_y * surface_direction[1] < 0:
-            self.velocity_y *= -1
-        """
 
     def collide_wall(self, wall_collisions):
         wall_face_direction = [0, 0]  # Enforces general direction after collision. [x, y]
@@ -145,8 +133,8 @@ class PongBall(Widget):
 
 
 class PongPaddle(Widget):
-    # Orientation of the paddle. [1, 1] means right and up diagonally, [-1, 0] means left only.
-    # Right side paddle is oriented to the left. [1, 0] (rightwards) orientation is default.
+    # Orientation of the paddle. [1, 1] points diagonally up to the right, [-1, 0] points straight left.
+    # Right side paddle is oriented to the left, [1, 0], which is also the default orientation.
     orientation_x = NumericProperty(1)
     orientation_y = NumericProperty(0)
     orientation = ReferenceListProperty(orientation_x, orientation_y)

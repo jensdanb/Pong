@@ -1,0 +1,23 @@
+#:kivy 2.0.0
+
+<WidgetGenerator>:
+    size: 80, 40
+
+    Label:
+        center: root.center
+        text: 'New Node'
+
+# Individual elements above. Architecture below
+
+<WorkSpace>:
+    widget_generator: nodes_factory
+
+    canvas:
+        Rectangle:
+            pos: self.width / 2, 0
+            size: 10, self.height
+
+    WidgetGenerator:
+        id: nodes_factory
+        top: root.top - 40
+        center_x: 40 + self.width / 2
