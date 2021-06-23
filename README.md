@@ -9,7 +9,7 @@ If you're familiar with Git you already know how to clone and run this. If you d
 1) Download and install Python plus an IDE. 
 2) Create a project folder and a Python "Virtual Environment" in it. 
 
-This tutorial video shows a way to do steps 1) and 2). Start at 1:50 into the video, and stop at 6:10. https://youtu.be/_uQrJ0TkZlc?t=110
+This tutorial video shows a way to do steps 1 and 2. Start at 1:50 into the video, and stop at 6:10. https://youtu.be/_uQrJ0TkZlc?t=110
 
 3) Install the kivy package to the project. 
 
