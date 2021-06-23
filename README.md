@@ -12,6 +12,7 @@ If you're familiar with Git you already know how to clone and run this. If you d
 This tutorial video shows a way to do steps 1) and 2). Start at 1:50 into the video, and stop at 6:10. https://youtu.be/_uQrJ0TkZlc?t=110
 
 3) Install the kivy package to the project. 
+
 In Pycharm, do this by opening the "Terminal" tab in the bottom of the screen. In Terminal, type "pip install kivy" and press enter. 
 
 4) Copy my project files into yours. 
