@@ -17,10 +17,11 @@ In Pycharm, do this by opening the "Terminal" tab in the bottom of the screen. I
 
 4) Copy my project files into yours. 
 
-In Pycharm on the left side is the "Project" folder, which contains "venv" and maybe a file that ends with ".py". Right click on one of the folders, or on "main.py" if it exists and choose Open In -> Explorer (assuming you are on Windows). It should show you the folder that Pycharm made for your project, with a folder inside it called "venv" and maybe some other files. Inside venv are the tools such as Python and Kivy that the project uses, the other files are the ones you can use to make a computer program. Download my files from this website and copy them into the project folder, next to the venv folder. For Pong, you need "pong game.py" and "pong.kv". 
+In Pycharm on the left side is the "Project" folder, which contains "venv" and maybe a file that ends with ".py". Right click on one of the folders, or on "main.py" if it exists, and choose Open In -> Explorer (if you are on Linux; Open In -> Files). 
+It should show you the folder that Pycharm made for your project, with a folder inside it called "venv" and maybe a "main.py" file next to it. Python itself and any extra tools (such as Kivy) are inside the venv folder, while other files next to venv are the ones you can create and edit to make a computer program with Python. Download my files from this website and copy them into the project folder, next to the venv folder. For Pong, you need the files "pong game.py" and "pong.kv". 
 
 5) Press run. 
 
-In Pycharm you should now see the files appeared on the left side. Double click the new ones so you can see them in the main screen. Right click somewhere in the middle of the file you want to run, and choose "Run" with the green triangle. To play Pong, run the "pong game.py" file. 
+In Pycharm you should see the files appeared on the left side after copying them into the project folder. Double click a file to show it in the main screen. Right click somewhere in the main screen and choose the "Run" option to run the currently open file as a Python program. For Pong, you need to run the file "pong game.py" and have "pong.kv" in the project folder. 
 
 If anything didn't work, send me a message :) 
